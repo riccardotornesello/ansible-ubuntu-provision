@@ -1,0 +1,23 @@
+---
+- hosts: all
+  become: true
+  roles:
+    - role: common
+      tags: common
+    - role: zsh
+      become: false
+      tags: zsh
+    - role: docker
+      tags: docker
+    - role: portainer_edge_agent
+      tags: portainer_edge_agent
+    - role: crowdsec
+      tags: security
+    - role: reboot
+      tags: reboot
+# TODO: traefik
+# TODO: node_exporter
+# TODO: watchtower
+# TODO: upload ssh key if not already present
+# TODO: hardening
+# TODO: UFW before Docker in iptables ?

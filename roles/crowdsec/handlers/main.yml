@@ -1,0 +1,4 @@
+- name: restart crowdsec firewall bouncer
+  service:
+    name: crowdsec-firewall-bouncer
+    state: restarted

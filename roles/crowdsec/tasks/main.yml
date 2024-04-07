@@ -1,0 +1,56 @@
+---
+- name: Add CrowdSec repository
+  block:
+    - name: Download CrowdSec repository keyring
+      ansible.builtin.get_url:
+        url: https://packagecloud.io/crowdsec/crowdsec/gpgkey
+        dest: /etc/apt/keyrings/crowdsec_crowdsec-archive-keyring.asc
+
+    - name: Add CrowdSec deb repository
+      ansible.builtin.apt_repository:
+        repo: deb [signed-by=/etc/apt/keyrings/crowdsec_crowdsec-archive-keyring.asc] https://packagecloud.io/crowdsec/crowdsec/ubuntu/ {{ ansible_distribution_release }} main
+        state: present
+        filename: crowdsec
+
+    - name: Add CrowdSec deb-src repository
+      ansible.builtin.apt_repository:
+        repo: deb-src [signed-by=/etc/apt/keyrings/crowdsec_crowdsec-archive-keyring.asc] https://packagecloud.io/crowdsec/crowdsec/ubuntu/ {{ ansible_distribution_release }} main
+        state: present
+        filename: crowdsec
+
+- name: Install CrowdSec
+  ansible.builtin.apt:
+    name:
+      - crowdsec
+    state: present
+    cache_valid_time: 3600
+
+- name: Start CrowdSec service
+  ansible.builtin.systemd:
+    name: crowdsec
+    state: started
+    enabled: yes
+
+- name: Install Firewall (NFTables) Bouncer
+  ansible.builtin.apt:
+    name:
+      - crowdsec-firewall-bouncer-nftables
+    state: present
+    cache_valid_time: 3600
+
+- name: Start Firewall (NFTables) Bouncer service
+  ansible.builtin.systemd:
+    name: crowdsec-firewall-bouncer
+    state: started
+    enabled: yes
+
+- name: Block FORWARD and DOCKER-USER chains
+  ansible.builtin.lineinfile:
+    path: /etc/crowdsec/bouncers/crowdsec-firewall-bouncer.yaml
+    regexp: "^#\\s*- {{ item.search }}"
+    line: "  - {{ item.replace }}"
+  loop:
+    - { search: "FORWARD", replace: "FORWARD" }
+    - { search: "DOCKER-USER", replace: "DOCKER-USER" }
+  notify:
+    - restart crowdsec firewall bouncer

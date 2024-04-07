@@ -1,0 +1,15 @@
+services:
+  portainer-edbe-agent:
+    container_name: portainer-edge-agent
+    image: portainer/agent:latest
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/lib/docker/volumes:/var/lib/docker/volumes
+      - /:/host
+      - /srv/portainer_edge_agent/data:/data
+    environment:
+      - EDGE=1
+      - EDGE_ID={{ portainer__edge_id }}
+      - EDGE_KEY={{ portainer__edge_key }}
+      - EDGE_INSECURE_POLL=0

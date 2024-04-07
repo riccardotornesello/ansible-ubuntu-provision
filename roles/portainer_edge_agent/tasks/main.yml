@@ -1,0 +1,22 @@
+---
+- name: Create portainer agent directory
+  ansible.builtin.file:
+    path: /opt/portainer-agent
+    state: directory
+    owner: root
+    group: root
+    mode: 0700
+
+- name: Upload portainer edge agent docker-compose.yml file
+  ansible.builtin.template:
+    src: templates/docker-compose.yml
+    dest: /opt/portainer-agent/docker-compose.yml
+    owner: root
+    group: root
+    mode: 0600
+
+- name: Start portainer edge agent
+  community.docker.docker_compose:
+    project_src: /opt/portainer-agent
+    state: present
+    pull: true

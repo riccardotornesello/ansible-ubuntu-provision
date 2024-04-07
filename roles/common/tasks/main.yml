@@ -1,0 +1,30 @@
+---
+- name: Upgrade packages
+  ansible.builtin.apt:
+    upgrade: full
+    update_cache: yes
+
+- name: Install packages
+  ansible.builtin.apt:
+    name:
+      - curl
+      - git
+      - logrotate
+      - python3-pip
+      - qemu-guest-agent
+      - wget
+    state: present
+
+- name: Install python packages
+  pip:
+    name:
+      - docker==6.1.3
+      - docker-compose
+    state: present
+
+- name: Enable compress on logrotate
+  lineinfile:
+    dest: /etc/logrotate.conf
+    regexp: "^#?compress"
+    line: "compress"
+    state: present

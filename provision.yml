@@ -18,6 +18,5 @@
 # TODO: traefik
 # TODO: node_exporter
 # TODO: watchtower
-# TODO: upload ssh key if not already present
 # TODO: hardening
 # TODO: UFW before Docker in iptables ?
